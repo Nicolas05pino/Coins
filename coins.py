@@ -2,17 +2,18 @@ import requests
 import time
 from binance.client import Client
 import pandas as pd
+import config
 
 #Conectar a la API
-api_key = "Q8VOvbFQm74uY9y6drB0YfjYtuotdqqVfZ6dyYVu4VvGE4FtPejb99DIJ9ZKQWVX"
+api_key = config.API_KEY
 
-client = Client("Q8VOvbFQm74uY9y6drB0YfjYtuotdqqVfZ6dyYVu4VvGE4FtPejb99DIJ9ZKQWVX", "DVGwkX9h4t61AOW6bCpaH9AmTyHaHL77HJEab5WXfmCv6lKot1fbPirAOGj6SdVa")
+client = Client(config.API_KEY, config.API_SECRET)
 
 #Establece la URL de la API de Binance
 base_url = "https://api.binance.com"
 
 #Establece el tiempo límite en minutos (en milisegundos)
-timestamp_limit = 18 * 60 * 1000
+timestamp_limit = 15 * 60 * 1000
 
 #Fecha y hora actual (en milisegundos)
 current_timestamp = int(time.time() * 1000)
@@ -20,7 +21,7 @@ current_timestamp = int(time.time() * 1000)
 #Tiempo límite para la consulta (en milisegundos)
 timestamp = current_timestamp - timestamp_limit
 
-coins = ['BTC','ETH', 'XRP', 'ADA', 'BNB', 'BCH', 'EOS','LTC', 'TRX', 'ETC', 'LINK', 'IOTA', 'NEO', 'ALGO', 'CHZ', 'UNFI', 'FTM']
+coins = ['BTC','ETH', 'XRP', 'ADA', 'BNB', 'BCH','LTC', 'TRX', 'ETC', 'LINK','MATIC','IOTA', 'NEO', 'CHZ', 'UNFI', 'FTM', 'DASH', 'ROSE', 'ALICE', 'XMR', 'THETA', 'KAVA', 'DOT','WAVES', 'RVN', 'BLZ', 'MANA', 'ICP', 'DOGE','SHIB','OCEAN']
 lista_valores = []
 
 for coin in coins:
@@ -35,7 +36,7 @@ for coin in coins:
     # Convierte la respuesta a formato JSON
     data = response.json()
 
-    # Obtén el precio de BTC en Binance hace 18 minutos
+    # Obtén el precio de la cripto en Binance hace unos minutos
     ago_price = float(data[0][4])
 
     # Obtener el precio actual de la moneda utilizando la API de Binance
@@ -61,8 +62,8 @@ def obtener_valor_negativo(elemento):
 lista_menores_al_final = sorted(lista_valores, key=obtener_valor_negativo, reverse=True)
 menor_a_mayor = list(reversed(lista_menores_al_final))
 
-df1 = pd.DataFrame(menor_a_mayor, columns=["Valores"])
-df2 = pd.DataFrame(mayor_a_menor, columns=["Valores"])
+df1 = pd.DataFrame(menor_a_mayor)
+df2 = pd.DataFrame(mayor_a_menor)
 
-print("Monedas que más han bajado en los últimos minutos: ", df1)
-print("Monedas que más han subido en los últimos minutos: ", df2)
+print("Monedas que más han subido en los últimos minutos: ", df2.head(7))
+print("Monedas que más han bajado en los últimos minutos: ", df1.head(7))
