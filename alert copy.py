@@ -4,9 +4,8 @@ from binance.client import Client
 import pandas as pd
 import config
 import threading
-import telebot
 
-#colores 
+#colores
 class bcolors:
     OKGREEN = '\033[92m'
     FAIL = '\033[91m'
@@ -16,7 +15,7 @@ def coins():
     #Conectar a la API
     api_key = config.API_KEY
 
-    client = Client(config.API_KEY, config.API_SECRET)
+    # client = Client(config.API_KEY, config.API_SECRET)
 
     #Establece la URL de la API de Binance
     base_url = "https://api.binance.com"
@@ -45,12 +44,13 @@ def coins():
             # Realiza una solicitud a la API
             response = requests.get(url)
 
+            criptomonedas = []
             # Verifica si la respuesta es exitosa
             if response.status_code == 200:
                 # Convierte la respuesta en un diccionario de Python
                 data1 = response.json()
                 # Crea una lista para guardar las criptomonedas con volumen mayor a 100.000.000
-                criptomonedas = []
+                
                 # Recorre todas las criptomonedas
                 for moneda in data1:
                     # Verifica si el volumen es mayor a 100.000.000 y si el par es USDT
@@ -104,29 +104,17 @@ def coins():
                 # Calcular el cambio porcentual entre el precio actual y el precio hace 15 min
                 change = float((current_price - float(ago_price)) / float(ago_price) * 100)
                 lista_valores.append(f"{coin} : {change:.2f}%")
-
-                """Comunicación con Telegram"""
-                bot = telebot.TeleBot("6221500469:AAFIqA5fAn-iqVKd8vz0oPCXQ8CuKuP9Qek")
-                users = []
-                @bot.message_handler(commands=['start'])
-                def send_welcome(message):
-                    if message.chat.id not in users:
-                        users.append(message.chat.id)
-                    bot.reply_to(message,"Hola! presiona start para iniciar(/start)")
-                    (print(len(users)))
-                def send_broadcast_coins(message):
-                    for user in users:
-                        try:
-                            bot.send_message(user,message)
-                            print("Ok")
-                        except:
-                            print("ERROR")
-                bot.polling()
-                porcentaje = 0.2
-                if abs(change) > porcentaje:
-                    # requests.post("https://api.telegram.org/bot6221500469:AAFIqA5fAn-iqVKd8vz0oPCXQ8CuKuP9Qek/sendMessage", data={'chat_id':'2012080643','text':f"La moneda {coin} se movió más de un {porcentaje}"})
-                    send_broadcast_coins(f"La moneda {coin} se movio más de un {porcentaje}")
                 
+                porcentaje = 4.2
+            
+                if abs(change) > porcentaje:
+                    requests.post("https://api.telegram.org/bot6221500469:AAFIqA5fAn-iqVKd8vz0oPCXQ8CuKuP9Qek/sendMessage",
+                                data={'chat_id':'2012080643','text':f"La moneda {coin} se movió más de un {porcentaje}"})
+                    requests.post("https://api.telegram.org/bot6221500469:AAFIqA5fAn-iqVKd8vz0oPCXQ8CuKuP9Qek/sendMessage",
+                                data={'chat_id':'1773861340','text':f"La moneda {coin} se movió más de un {porcentaje}"})
+                    requests.post("https://api.telegram.org/bot6221500469:AAFIqA5fAn-iqVKd8vz0oPCXQ8CuKuP9Qek/sendMessage",
+                                data={'chat_id':'5318299261','text':f"La moneda {coin} se movió más de un {porcentaje}"})
+                        
             mayor_a_menor = sorted(lista_valores, key=lambda x: (x.split(":")[1].strip()), reverse=True)
 
             #menores
@@ -144,7 +132,6 @@ def coins():
 
             print(f"{bcolors.WHITE}Monedas que más han subido en los últimos {tiempo} minutos:\033[0m ", bcolors.OKGREEN + df2.head(5))
             print(f"{bcolors.WHITE}Monedas que más han bajado en los últimos {tiempo} minutos:\033[0m ", bcolors.FAIL + df1.head(5))
-
         calcular()
 coins()
 
@@ -159,5 +146,4 @@ iniciar_ejecucion()
 
 # Mantén el programa en ejecución para que los hilos sigan funcionando
 while True:
-    
     time.sleep(60)
