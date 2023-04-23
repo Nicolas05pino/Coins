@@ -1,0 +1,9 @@
+def remove_numbers_from_names(coins_list):
+    for i, coin in enumerate(coins_list):
+        new_coin = ''.join([c for c in coin if not c.isdigit()])
+        coins_list[i] = new_coin
+    return coins_list
+
+coins = ['BTC','ETH', 'XRP', 'ADA', 'BNB', 'BCH','LTC', 'TRX', 'ETC', 'LINK','MATIC','IOTA', 'NEO', 'CHZ', 'UNFI', 'FTM', 'DASH', 'ROSE', 'ALICE', 'XMR', 'THETA', 'KAVA', 'DOT','WAVES', 'RVN', 'BLZ', 'MANA', 'ICP', 'DOGE','1000SHIB','OCEAN', 'APE']
+output = remove_numbers_from_names(coins)
+print(output)

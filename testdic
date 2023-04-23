@@ -1,0 +1,25 @@
+import requests
+
+# URL de la API de Binance
+url = "https://fapi.binance.com/fapi/v1/ticker/24hr"
+
+# Realiza una solicitud a la API
+response = requests.get(url)
+
+# Verifica si la respuesta es exitosa
+if response.status_code == 200:
+    # Convierte la respuesta en un diccionario de Python
+    data = response.json()
+    # Crea una lista para guardar las criptomonedas con volumen mayor a 100.000.000
+    criptomonedas = []
+    # Recorre todas las criptomonedas
+    for moneda in data:
+        # Verifica si el volumen es mayor a 100.000.000 y si el par es USDT
+        if moneda["symbol"].endswith("USDT") and float(moneda["quoteVolume"]) > 100000000:
+            # Agrega la criptomoneda a la lista
+            criptomonedas.append(moneda["symbol"])
+    # Imprime la lista de criptomonedas
+    print(criptomonedas)
+else:
+    # En caso de error, muestra un mensaje
+    print("Error al obtener datos de la API")
